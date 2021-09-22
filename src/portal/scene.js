@@ -3,6 +3,10 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Pane } from "tweakpane";
 import Stats from "stats.js";
 
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
+
 import portalVertexShader from "../shaders/portal/vertex.glsl";
 import portalFragmentShader from "../shaders/portal/fragment.glsl";
 
@@ -204,6 +208,44 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.outputEncoding = THREE.sRGBEncoding;
 
 /**
+ * Post Processing
+ */
+const effectComposer = new EffectComposer(renderer);
+effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+effectComposer.setSize(sizes.width, sizes.height);
+
+const renderPass = new RenderPass(scene, camera);
+effectComposer.addPass(renderPass);
+
+const unrealBloomPass = new UnrealBloomPass();
+effectComposer.addPass(unrealBloomPass);
+
+unrealBloomPass.strength = 0.14;
+unrealBloomPass.radius = 1;
+unrealBloomPass.threshold = 0.455;
+
+const postprocessingFolder = pane.addFolder({ title: "Post Processing" });
+
+postprocessingFolder.addInput(unrealBloomPass, "strength", {
+  min: 0,
+  max: 0.5,
+  step: 0.001,
+  label: "bloomStrength",
+});
+postprocessingFolder.addInput(unrealBloomPass, "radius", {
+  min: 0,
+  max: 5,
+  step: 0.001,
+  label: "bloomRadius",
+});
+postprocessingFolder.addInput(unrealBloomPass, "threshold", {
+  min: 0,
+  max: 2,
+  step: 0.001,
+  label: "bloomThreshold",
+});
+
+/**
  * Animate
  */
 const clock = new THREE.Clock();
@@ -220,7 +262,8 @@ const tick = () => {
   shaderMaterial.uniforms.uTime.value = elapsedTime;
 
   // Render
-  renderer.render(scene, camera);
+  // renderer.render(scene, camera);
+  effectComposer.render(scene, camera);
 
   // Call tick again on the next frame
   // window.requestAnimationFrame(tick);

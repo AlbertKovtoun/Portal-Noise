@@ -10,10 +10,12 @@ const textureLoader = new TextureLoader();
 
 //Load Textures
 const marbleTexture = textureLoader.load("/assets/textures/marbleColor.jpg");
+marbleTexture.encoding = THREE.sRGBEncoding;
 
 //Define Materials
 const roofMaterial = new THREE.MeshStandardMaterial({ color: "white" });
 const wallMaterial = new THREE.MeshStandardMaterial({ color: "white" });
+
 const marbleMaterial = new THREE.MeshStandardMaterial({
   map: marbleTexture,
   roughness: 0.3,
