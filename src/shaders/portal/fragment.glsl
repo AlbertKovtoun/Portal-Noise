@@ -53,7 +53,8 @@ varying float vNoiseElevation;
 void main()
 {
     // float baseColor = sin(abs(cnoise(vUv * 10.0)) * 20.0);
-    float noiseColor = step(0.1, abs(vNoiseElevation * 10.0));
+    // float noiseColor = step(0.1, abs(vNoiseElevation * 10.0));
+    float noiseColor = abs(vNoiseElevation * 15.0);
 
     vec3 color = mix(uBaseColor, uAccentColor, noiseColor);
 

@@ -6,35 +6,38 @@ import Stats from "stats.js";
 import portalVertexShader from "../shaders/portal/vertex.glsl";
 import portalFragmentShader from "../shaders/portal/fragment.glsl";
 
+import { loadRoom } from "./room";
+import { setLights } from "./lights";
+
 //Performance
 const stats = new Stats();
 stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild(stats.dom);
 
 //Init Debug
-const pane = new Pane();
+export const pane = new Pane({ title: "Portal Noise" });
 const debugObject = {};
+
+//Loaders
+const textureLoader = new THREE.TextureLoader();
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
 
 // Scene
-const scene = new THREE.Scene();
+export const scene = new THREE.Scene();
 
-/**
- * Test mesh
- */
-// Geometry
-const geometry = new THREE.PlaneGeometry(1, 1, 128, 128);
+// Portal Geometry
+const shaderGeometry = new THREE.PlaneGeometry(1, 1, 256, 256);
 
 debugObject.baseColor = "#ff0000";
 debugObject.accentColor = "#000000";
 
 // Material
-const material = new THREE.ShaderMaterial({
+const shaderMaterial = new THREE.ShaderMaterial({
   vertexShader: portalVertexShader,
   fragmentShader: portalFragmentShader,
-  side: THREE.DoubleSide,
+  // side: THREE.DoubleSide,
   uniforms: {
     uTime: { value: 0 },
 
@@ -50,47 +53,49 @@ const material = new THREE.ShaderMaterial({
   },
 });
 
-pane.addInput(debugObject, "baseColor").on("change", () => {
-  material.uniforms.uBaseColor.value.set(debugObject.baseColor);
+const portalFolder = pane.addFolder({ title: "Portal" });
+
+portalFolder.addInput(debugObject, "baseColor").on("change", () => {
+  shaderMaterial.uniforms.uBaseColor.value.set(debugObject.baseColor);
 });
-pane.addInput(debugObject, "accentColor").on("change", () => {
-  material.uniforms.uAccentColor.value.set(debugObject.accentColor);
+portalFolder.addInput(debugObject, "accentColor").on("change", () => {
+  shaderMaterial.uniforms.uAccentColor.value.set(debugObject.accentColor);
 });
 
-pane.addInput(material.uniforms.uWaveSpeed, "value", {
+portalFolder.addInput(shaderMaterial.uniforms.uWaveSpeed, "value", {
   min: 0,
   max: 2,
   step: 0.01,
   label: "uWaveSpeed",
 });
 
-pane.addInput(material.uniforms.uWaveFrequency.value, "x", {
+portalFolder.addInput(shaderMaterial.uniforms.uWaveFrequency.value, "x", {
   min: 0,
   max: 20,
   step: 0.1,
   label: "uWaveFrequencyX",
 });
-pane.addInput(material.uniforms.uWaveFrequency.value, "y", {
+portalFolder.addInput(shaderMaterial.uniforms.uWaveFrequency.value, "y", {
   min: 0,
   max: 20,
   step: 0.1,
   label: "uWaveFrequencyY",
 });
 
-pane.addInput(material.uniforms.uWaveHeight.value, "x", {
+portalFolder.addInput(shaderMaterial.uniforms.uWaveHeight.value, "x", {
   min: 0,
   max: 0.5,
   step: 0.01,
   label: "uWaveHeightX",
 });
-pane.addInput(material.uniforms.uWaveHeight.value, "y", {
+portalFolder.addInput(shaderMaterial.uniforms.uWaveHeight.value, "y", {
   min: 0,
   max: 0.5,
   step: 0.01,
   label: "uWaveHeightY",
 });
 
-pane.addInput(material.uniforms.uNoiseFrequency, "value", {
+portalFolder.addInput(shaderMaterial.uniforms.uNoiseFrequency, "value", {
   min: 0,
   max: 30,
   step: 0.1,
@@ -98,8 +103,14 @@ pane.addInput(material.uniforms.uNoiseFrequency, "value", {
 });
 
 // Mesh
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
+const portalMesh = new THREE.Mesh(shaderGeometry, shaderMaterial);
+scene.add(portalMesh);
+
+//Import room
+loadRoom();
+
+//Lights
+setLights();
 
 /**
  * Sizes
@@ -133,7 +144,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.set(0.25, -0.25, 1);
+camera.position.set(0.25, 0.5, 5);
 scene.add(camera);
 
 // Controls
@@ -145,6 +156,7 @@ controls.enableDamping = true;
  */
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
+  antialias: true,
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -163,7 +175,7 @@ const tick = () => {
   controls.update();
 
   //Portal movement
-  material.uniforms.uTime.value = elapsedTime;
+  shaderMaterial.uniforms.uTime.value = elapsedTime;
 
   // Render
   renderer.render(scene, camera);

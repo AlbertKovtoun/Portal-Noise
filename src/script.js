@@ -1,2 +1,2 @@
 import "./style.scss";
-import portal from "./portal/portal";
+import portal from "./portal/scene";
