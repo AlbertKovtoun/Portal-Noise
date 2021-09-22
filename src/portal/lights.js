@@ -24,7 +24,7 @@ export const setLights = () => {
   pointLight1.position.set(0, 1.8, 3.1);
   scene.add(pointLight1);
   const pointLight1Helper = new THREE.PointLightHelper(pointLight1);
-//   scene.add(pointLight1Helper);
+  //   scene.add(pointLight1Helper);
 
   //Light1 Tweaks
   lightsFolder.addInput(pointLight1.position, "x", {
@@ -61,7 +61,7 @@ export const setLights = () => {
   pointLight1.shadow.bias = -0.009;
   scene.add(pointLight2);
   const pointLight2Helper = new THREE.PointLightHelper(pointLight2);
-//   scene.add(pointLight2Helper);
+  //   scene.add(pointLight2Helper);
 
   //Light2 Tweaks
   lightsFolder.addInput(pointLight2.position, "x", {
@@ -95,7 +95,7 @@ export const setLights = () => {
   portalLight.position.set(0, 0.54, 0.175);
   scene.add(portalLight);
   const portalLightHelper = new RectAreaLightHelper(portalLight);
-//   scene.add(portalLightHelper);
+  //   scene.add(portalLightHelper);
 
   //prtalLight Tweaks
   lightsFolder.addInput(portalLight.position, "x", {
