@@ -28,12 +28,12 @@ const canvas = document.querySelector("canvas.webgl");
 export const scene = new THREE.Scene();
 
 // Portal Geometry
-const shaderGeometry = new THREE.PlaneGeometry(1, 1, 256, 256);
+const shaderGeometry = new THREE.PlaneGeometry(2, 2.5, 256, 256);
 
 debugObject.baseColor = "#ff0000";
 debugObject.accentColor = "#000000";
 
-// Material
+// Portal Material
 const shaderMaterial = new THREE.ShaderMaterial({
   vertexShader: portalVertexShader,
   fragmentShader: portalFragmentShader,
@@ -53,7 +53,47 @@ const shaderMaterial = new THREE.ShaderMaterial({
   },
 });
 
+const portalMesh = new THREE.Mesh(shaderGeometry, shaderMaterial);
+portalMesh.position.set(0, 0.5, -0.05);
+
 const portalFolder = pane.addFolder({ title: "Portal" });
+
+portalFolder.addInput(portalMesh.scale, "x", {
+  min: 0,
+  max: 5,
+  step: 0.01,
+  label: "portalScaleX",
+});
+portalFolder.addInput(portalMesh.scale, "y", {
+  min: 0,
+  max: 5,
+  step: 0.01,
+  label: "portalScaleY",
+});
+portalFolder.addInput(portalMesh.scale, "z", {
+  min: 0,
+  max: 5,
+  step: 0.01,
+  label: "portalScaleZ",
+});
+portalFolder.addInput(portalMesh.position, "x", {
+  min: -2,
+  max: 2,
+  step: 0.01,
+  label: "portalPositionX",
+});
+portalFolder.addInput(portalMesh.position, "y", {
+  min: -2,
+  max: 2,
+  step: 0.01,
+  label: "portalPositionY",
+});
+portalFolder.addInput(portalMesh.position, "z", {
+  min: -1,
+  max: 1,
+  step: 0.01,
+  label: "portalPositionZ",
+});
 
 portalFolder.addInput(debugObject, "baseColor").on("change", () => {
   shaderMaterial.uniforms.uBaseColor.value.set(debugObject.baseColor);
@@ -101,9 +141,6 @@ portalFolder.addInput(shaderMaterial.uniforms.uNoiseFrequency, "value", {
   step: 0.1,
   label: "uNoiseFrequency",
 });
-
-// Mesh
-const portalMesh = new THREE.Mesh(shaderGeometry, shaderMaterial);
 scene.add(portalMesh);
 
 //Import room
@@ -144,7 +181,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.set(0.25, 0.5, 5);
+camera.position.set(0.25, 0.5, 8);
 scene.add(camera);
 
 // Controls
@@ -161,6 +198,7 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.needsUpdate = false;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.outputEncoding = THREE.sRGBEncoding;
@@ -185,7 +223,11 @@ const tick = () => {
   renderer.render(scene, camera);
 
   // Call tick again on the next frame
-  window.requestAnimationFrame(tick);
+  // window.requestAnimationFrame(tick);
+
+  setTimeout(function () {
+    requestAnimationFrame(tick);
+  }, 1000 / 60);
 
   stats.end();
 };

@@ -16,12 +16,18 @@ const roofMaterial = new THREE.MeshStandardMaterial({ color: "white" });
 const wallMaterial = new THREE.MeshStandardMaterial({ color: "white" });
 const marbleMaterial = new THREE.MeshStandardMaterial({
   map: marbleTexture,
-  roughness: 0,
+  roughness: 0.3,
 });
 const lightMaterial = new THREE.MeshStandardMaterial({ emissive: 0xffffff });
+const frameMaterial = new THREE.MeshStandardMaterial({
+  color: 0x000000,
+});
+
+wallMaterial.side = THREE.FrontSide;
+wallMaterial.shadowSide = THREE.FrontSide;
 
 export const loadRoom = () => {
-  gltfLoader.load("/assets/models/portalRoom.glb", (gltf) => {
+  gltfLoader.load("/assets/models/portalRoom2.glb", (gltf) => {
     const room = gltf.scene;
 
     //Fetch the names of the objects
@@ -50,8 +56,18 @@ export const loadRoom = () => {
     floorMesh.material = marbleMaterial;
     light1Mesh.material = lightMaterial;
     light2Mesh.material = lightMaterial;
+    frameMesh.material = frameMaterial;
 
     room.position.set(0, -1, 0);
+    room.traverse((child) => {
+      if (child.name === "light1" || child.name === "light2") {
+        child.castShadow = false;
+        child.receiveShadow = false;
+      } else {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
     scene.add(room);
   });
 };
