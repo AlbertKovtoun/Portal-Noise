@@ -7,7 +7,7 @@ import { pane } from "./scene";
 export const setLights = () => {
   const lightsFolder = pane.addFolder({ title: "Lights" });
 
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.05);
   scene.add(ambientLight);
 
   lightsFolder.addInput(ambientLight, "intensity", {

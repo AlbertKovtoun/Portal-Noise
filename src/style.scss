@@ -10,6 +10,29 @@ body {
   background-color: grey;
 }
 
+#blocker {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  // z-index: 1;
+}
+
+#instructions {
+  width: 100%;
+  height: 100%;
+  color: white;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+  font-size: 34px;
+  cursor: pointer;
+}
+
 .webgl {
   position: fixed;
   left: 0;
